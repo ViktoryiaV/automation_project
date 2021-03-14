@@ -92,8 +92,10 @@ class TodoAppTest {
         todoPageHelper.createTask(task1).createTask(task2)
                 .selectAllFilter().completeTask(task1)
 
-        assertTrue(todoPageHelper.isTaskCompleted(task1), 'Completed task is not displayed')
-        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Uncompleted task is not displayed')
+        assertTrue(todoPageHelper.isTaskDisplayed(task1), 'Completed task is not displayed')
+        assertTrue(todoPageHelper.isTaskCompleted(task1), 'Displayed task is not completed')
+        assertTrue(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is not displayed')
+        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Displayed task is completed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 
@@ -104,8 +106,9 @@ class TodoAppTest {
         todoPageHelper.createTask(task1).createTask(task2)
                 .selectAllFilter().completeTask(task1).selectActiveFilter()
 
-        assertFalse(todoPageHelper.isTaskCompleted(task1), 'Completed task is displayed')
-        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Uncompleted task is not displayed')
+        assertFalse(todoPageHelper.isTaskDisplayed(task1), 'Completed task is displayed')
+        assertTrue(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is not displayed')
+        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Displayed task is completed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 
@@ -116,8 +119,9 @@ class TodoAppTest {
         todoPageHelper.createTask(task1).createTask(task2)
                 .selectAllFilter().completeTask(task1).selectCompletedFilter()
 
-        assertTrue(todoPageHelper.isTaskCompleted(task1), 'Completed task is not displayed')
-        assertFalse(todoPageHelper.isTaskUncompleted(task2), 'Uncompleted task is displayed')
+        assertTrue(todoPageHelper.isTaskDisplayed(task1), 'Completed task is not displayed')
+        assertTrue(todoPageHelper.isTaskCompleted(task1), 'Displayed task is not completed')
+        assertFalse(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is displayed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 }
