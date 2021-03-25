@@ -1,7 +1,14 @@
 package org.example.lesson7
 
 import groovy.util.logging.Log4j
+import io.github.bonigarcia.wdm.WebDriverManager
 import org.example.lesson7.helpers.TodoPageHelper
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.remote.DesiredCapabilities
+import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertTrue
@@ -12,7 +19,24 @@ import static org.testng.Assert.assertEquals
 @Log4j
 class TodoAppTest {
 
+    static WebDriver driver
+
     TodoPageHelper todoPageHelper = new TodoPageHelper()
+
+    @BeforeClass
+    void launchBrowser() {
+        WebDriverManager.chromedriver().setup()
+        DesiredCapabilities capabilities = DesiredCapabilities.chrome()
+        ChromeOptions options = new ChromeOptions()
+        options.addArguments('--incognito')
+        capabilities.setCapability(ChromeOptions.CAPABILITY, options)
+        driver = new ChromeDriver(capabilities)
+    }
+
+    @AfterClass
+    void closeBrowser() {
+        driver.quit()
+    }
 
     @Test(priority = 101)
     void navigateTest() {

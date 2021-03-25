@@ -21,19 +21,19 @@ class TodoPageHelper {
     }
 
     boolean isInputFieldDisplayed() {
-        boolean result = true
+        boolean result = page.isInputFieldDisplayed()
         log.info("Check if input field displayed - $result")
         result
     }
 
     String getInputFieldPlaceholder() {
-        String result = 'What needs to be done?'
+        String result = page.getInputFieldPlaceholder()
         log.info("Check input placeholder - $result")
         result
     }
 
     boolean isFooterDisplayed() {
-        boolean result = false
+        boolean result = page.isFooterDisplayed()
         log.info("Check if footer displayed - $result")
         result
     }
