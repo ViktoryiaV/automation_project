@@ -1,0 +1,67 @@
+2021-03-29 16:16:05,849 INFO  - Navigate Todo app 
+2021-03-29 16:16:07,124 INFO  - Check if todo header displayed - true 
+2021-03-29 16:16:07,157 INFO  - Check if input field displayed - true 
+2021-03-29 16:16:07,158 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:07,186 INFO  - Check input placeholder - What needs to be done? 
+2021-03-29 16:16:07,219 INFO  - Check if footer displayed - false 
+2021-03-29 16:16:07,708 INFO  - Navigate Todo app 
+2021-03-29 16:16:07,816 INFO  - Create a new task - My test task 
+2021-03-29 16:16:07,820 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:07,871 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:07,970 INFO  - Check if task[My test task] displayed - true 
+2021-03-29 16:16:07,971 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')] 
+2021-03-29 16:16:08,044 INFO  - Check items left counter text - 1 item left 
+2021-03-29 16:16:08,492 DEBUG - Getting element - //input[@class='toggle'][not(@checked)] 
+2021-03-29 16:16:08,675 DEBUG - Getting element - //button[text()='Clear completed'] 
+2021-03-29 16:16:08,749 INFO  - Navigate Todo app 
+2021-03-29 16:16:08,862 INFO  - Create a new task - My test task 
+2021-03-29 16:16:08,862 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:08,911 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:08,954 INFO  - Select 'All' filter 
+2021-03-29 16:16:08,954 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All'] 
+2021-03-29 16:16:09,094 INFO  - Update task[My test task] name - My test new task 
+2021-03-29 16:16:09,107 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My test task'] 
+2021-03-29 16:16:09,389 INFO  - Check if task[My test new task] displayed - true 
+2021-03-29 16:16:09,390 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')] 
+2021-03-29 16:16:09,414 INFO  - Check items left counter text - 1 item left 
+2021-03-29 16:16:09,828 DEBUG - Getting element - //input[@class='toggle'][not(@checked)] 
+2021-03-29 16:16:09,942 DEBUG - Getting element - //button[text()='Clear completed'] 
+2021-03-29 16:16:10,019 INFO  - Navigate Todo app 
+2021-03-29 16:16:10,146 INFO  - Create a new task - My task 1 
+2021-03-29 16:16:10,146 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:10,194 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:10,243 INFO  - Create a new task - My task 2 
+2021-03-29 16:16:10,243 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:10,277 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:10,346 INFO  - Select 'All' filter 
+2021-03-29 16:16:10,346 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All'] 
+2021-03-29 16:16:10,425 INFO  - Delete task[My task 1] 
+2021-03-29 16:16:10,425 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task 1'] 
+2021-03-29 16:16:10,443 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task 1']/..//button 
+2021-03-29 16:16:10,790 INFO  - Check if task[My task 1] displayed - false 
+2021-03-29 16:16:10,790 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')] 
+2021-03-29 16:16:10,810 INFO  - Check items left counter text - 1 item left 
+2021-03-29 16:16:11,192 DEBUG - Getting element - //input[@class='toggle'][not(@checked)] 
+2021-03-29 16:16:11,305 DEBUG - Getting element - //button[text()='Clear completed'] 
+2021-03-29 16:16:11,381 INFO  - Navigate Todo app 
+2021-03-29 16:16:11,493 INFO  - Create a new task - My task 
+2021-03-29 16:16:11,493 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:11,542 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:11,584 INFO  - Delete task[My task] 
+2021-03-29 16:16:11,585 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task'] 
+2021-03-29 16:16:11,603 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task']/..//button 
+2021-03-29 16:16:11,902 INFO  - Check if task[My task] displayed - false 
+2021-03-29 16:16:11,933 INFO  - Check if footer displayed - false 
+2021-03-29 16:16:12,585 INFO  - Navigate Todo app 
+2021-03-29 16:16:12,702 INFO  - Create a new task - My task 
+2021-03-29 16:16:12,703 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:12,758 DEBUG - Getting element - //input[contains(@class, 'new-todo')] 
+2021-03-29 16:16:12,807 INFO  - Select 'All' filter 
+2021-03-29 16:16:12,807 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All'] 
+2021-03-29 16:16:12,904 INFO  - Complete task[My task] 
+2021-03-29 16:16:12,922 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task']/..//input[@class='toggle'] 
+2021-03-29 16:16:13,029 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='My task']/..//input[@class='toggle'][@checked] 
+2021-03-29 16:16:13,055 INFO  - Check if task[My task] completed - true 
+2021-03-29 16:16:13,055 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')] 
+2021-03-29 16:16:13,085 INFO  - Check items left counter text - 0 items left 
+2021-03-29 16:16:13,123 INFO  - Check if 'Clear Completed' button displayed - true 

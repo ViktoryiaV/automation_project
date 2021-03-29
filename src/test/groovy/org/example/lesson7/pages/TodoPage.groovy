@@ -1,20 +1,40 @@
 package org.example.lesson7.pages
 
-import org.example.lesson7.TodoAppTest
-import org.openqa.selenium.By
+import org.example.lesson7.utils.DriverManager
+import org.example.lesson7.utils.uielements.WebElement
+import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
+import org.openqa.selenium.interactions.Actions
 
-import java.util.concurrent.TimeoutException
+class TodoPage extends BasePage {
 
-class TodoPage {
+    private WebElement todoHeader = new WebElement('//header/h1')
+    private WebElement inputField = new WebElement("//input[contains(@class, 'new-todo')]")
+    private WebElement footer = new WebElement("//footer[contains(@class, 'footer')]")
+    private WebElement itemsLeftCounter = new WebElement("//footer//span[contains(@class, 'todo-count')]")
+    private WebElement allFilter = new WebElement("//footer//ul[contains(@class, 'filters')]//a[text()='All']")
+    private WebElement activeFilter = new WebElement("//footer//ul[contains(@class, 'filters')]//a[text()='Active']")
+    private WebElement completedFilter = new WebElement("//footer//ul[contains(@class, 'filters')]//a[text()='Completed']")
+    private WebElement ClearCompletedButton = new WebElement("//button[text()='Clear completed']")
 
-    private todoHeader = '//header/h1'
-    private inputField = "//input[contains(@class, 'new-todo')]"
-    private footer = "//footer[contains(@class, 'footer')]"
+    private WebElement getTask(name) {
+        new WebElement("//ul[contains(@class, 'todo-list')]//label[text()='$name']")
+    }
+
+    private getTaskCheckbox(name) {
+        new WebElement("${getTask(name).toString()}/..//input[@class='toggle']")
+    }
+
+    private getTaskCheckedCheckbox(name) {
+        new WebElement("${getTaskCheckbox(name).toString()}[@checked]")
+    }
+
+    private WebElement getTaskDeleteIcon(name) {
+        new WebElement("//ul[contains(@class, 'todo-list')]//label[text()='$name']/..//button")
+    }
 
     TodoPage getPage() {
-        waitForElementDisplayed(inputField)
+        inputField.waitForVisible()
         this
     }
 
@@ -24,76 +44,71 @@ class TodoPage {
     }
 
     boolean isTodoHeaderDisplayed() {
-        isDisplayed(todoHeader)
+        todoHeader.isDisplayed()
     }
 
     boolean isInputFieldDisplayed() {
-        isDisplayed(inputField)
+        inputField.isDisplayed()
     }
 
     String getInputFieldPlaceholder() {
-        getElement(inputField).getAttribute('placeholder')
+        inputField.getAttribute('placeholder')
 
     }
 
     boolean isFooterDisplayed() {
-        isDisplayed(footer)
+        footer.isDisplayed()
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private WebElement getElement(String xpath) {
-        getDriver().findElement(By.xpath(xpath))
-    }
-
-
-    private WebDriver getDriver() {
-        TodoAppTest.driver
-    }
-
-    boolean isDisplayed(xpath) {
-        getDriver().findElements(By.xpath(xpath)).any {it.isDisplayed()}
-    }
-
-    private waitForElementDisplayed(String xpath) {
-        waitForCondition(10, 500) {
-            try {
-                getDriver().findElement(By.xpath(xpath)).isDisplayed()
-            } catch (org.openqa.selenium.NoSuchElementException ignored) {
-                false
-            }
+    TodoPage createTask(task) {
+        inputField.with {
+            clear()
+            sendKeys(task + Keys.ENTER)
         }
+    }
+
+    boolean isTaskDisplayed(task) {
+        getTask(task).isDisplayed()
+    }
+
+    String getItemsLeftCounterText() {
+        itemsLeftCounter.getText()
 
     }
 
-    private void waitForCondition(int sec, int ping, Closure condition) {
-        def ms = sec * 1000
-        long endTime = Calendar.getInstance().getTimeInMillis() + (ms)
-        boolean isSuccess = false
-        while (Calendar.getInstance().getTimeInMillis() <= endTime) {
-            if (condition.call()) {
-                isSuccess = true
-                return
-            }
-            sleep(ping)
+    TodoPage clickAllFilter() {
+        allFilter.click()
+        getPage()
+    }
+
+    TodoPage updateTask(task, newTask) {
+        def backSpaces = (1..task.toString().length()).collect{Keys.BACK_SPACE}.join('')
+        new Actions(driver)
+                .doubleClick(getTask(task).getElement()).sendKeys(backSpaces).sendKeys(newTask + Keys.ENTER)
+                .build().perform()
+        getPage()
+    }
+
+    TodoPage clickDeleteIconForTask(task) {
+        def label = getTask(task).getElement()
+        def iconX = getTaskDeleteIcon(task).getElement()
+        new Actions(driver).moveToElement(label).click(iconX).build().perform()
+        getPage()
+    }
+
+    boolean isTaskCompleted(task) {
+        if (getTaskCheckedCheckbox(task).isPresent()) {
+            return getTaskCheckedCheckbox(task).getSize().width > 0
         }
-        if (!isSuccess) {
-            throw new TimeoutException("Condition not appeared in $sec sec")
-        }
+        false
+    }
+
+    TodoPage clickTaskCheckbox(task) {
+        getTaskCheckbox(task).click()
+        getPage()
+    }
+
+    boolean isClearCompletedButtonDisplayed() {
+        ClearCompletedButton.isDisplayed()
     }
 }

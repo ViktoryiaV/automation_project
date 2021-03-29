@@ -1,41 +1,27 @@
 package org.example.lesson7
 
 import groovy.util.logging.Log4j
-import io.github.bonigarcia.wdm.WebDriverManager
 import org.example.lesson7.helpers.TodoPageHelper
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.remote.DesiredCapabilities
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
+import org.example.lesson7.projectutils.TodoAppCleaner
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertEquals
+import java.lang.reflect.Method
 
+import static org.testng.Assert.*
 
 @Log4j
-class TodoAppTest {
-
-    static WebDriver driver
+class TodoAppTest extends BaseTest {
 
     TodoPageHelper todoPageHelper = new TodoPageHelper()
 
-    @BeforeClass
-    void launchBrowser() {
-        WebDriverManager.chromedriver().setup()
-        DesiredCapabilities capabilities = DesiredCapabilities.chrome()
-        ChromeOptions options = new ChromeOptions()
-        options.addArguments('--incognito')
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options)
-        driver = new ChromeDriver(capabilities)
-    }
-
-    @AfterClass
-    void closeBrowser() {
-        driver.quit()
+    @BeforeMethod
+    void navigate(Method m) {
+        if (m.getName() == 'navigateTest') {
+            return
+        }
+        TodoAppCleaner.clean()
+        todoPageHelper.navigate()
     }
 
     @Test(priority = 101)
@@ -94,11 +80,12 @@ class TodoAppTest {
         todoPageHelper.createTask(task).selectAllFilter().completeTask(task)
 
         assertTrue(todoPageHelper.isTaskCompleted(task), 'User is not able to complete task')
-        assertEquals(todoPageHelper.getItemsLeftCounterText(), '0 item left', 'Wrong items counter after delete')
+        assertEquals(todoPageHelper.getItemsLeftCounterText(), '0 items left', 'Wrong items counter after delete')
         assertTrue(todoPageHelper.isClearCompletedButtonDisplayed(),
                 "'Clear completed' button is not displayed after user completes some task")
     }
 
+/*
     @Test(priority = 107)
     void uncompleteTaskTest() {
         def task = 'My task'
@@ -148,4 +135,5 @@ class TodoAppTest {
         assertFalse(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is displayed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
+*/
 }
