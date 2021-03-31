@@ -85,14 +85,14 @@ class TodoAppTest extends BaseTest {
                 "'Clear completed' button is not displayed after user completes some task")
     }
 
-/*
+
     @Test(priority = 107)
     void uncompleteTaskTest() {
         def task = 'My task'
         todoPageHelper.createTask(task).selectAllFilter().completeTask(task)
                 .uncompleteTask(task)
 
-        assertTrue(todoPageHelper.isTaskUncompleted(task), 'User is not able to uncomplete task')
+        assertFalse(todoPageHelper.isTaskCompleted(task), 'User is not able to uncomplete task')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 
@@ -106,7 +106,7 @@ class TodoAppTest extends BaseTest {
         assertTrue(todoPageHelper.isTaskDisplayed(task1), 'Completed task is not displayed')
         assertTrue(todoPageHelper.isTaskCompleted(task1), 'Displayed task is not completed')
         assertTrue(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is not displayed')
-        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Displayed task is completed')
+        assertFalse(todoPageHelper.isTaskCompleted(task2), 'Displayed task is completed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 
@@ -119,7 +119,7 @@ class TodoAppTest extends BaseTest {
 
         assertFalse(todoPageHelper.isTaskDisplayed(task1), 'Completed task is displayed')
         assertTrue(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is not displayed')
-        assertTrue(todoPageHelper.isTaskUncompleted(task2), 'Displayed task is completed')
+        assertFalse(todoPageHelper.isTaskCompleted(task2), 'Displayed task is completed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
 
@@ -135,5 +135,5 @@ class TodoAppTest extends BaseTest {
         assertFalse(todoPageHelper.isTaskDisplayed(task2), 'Uncompleted task is displayed')
         assertEquals(todoPageHelper.getItemsLeftCounterText(), '1 item left', 'Wrong items counter after delete')
     }
-*/
+
 }

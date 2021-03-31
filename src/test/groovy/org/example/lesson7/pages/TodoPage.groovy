@@ -81,6 +81,16 @@ class TodoPage extends BasePage {
         getPage()
     }
 
+    TodoPage clickActiveFilter() {
+        activeFilter.click()
+        getPage()
+    }
+
+    TodoPage clickCompletedFilter() {
+        completedFilter.click()
+        getPage()
+    }
+
     TodoPage updateTask(task, newTask) {
         def backSpaces = (1..task.toString().length()).collect{Keys.BACK_SPACE}.join('')
         new Actions(driver)

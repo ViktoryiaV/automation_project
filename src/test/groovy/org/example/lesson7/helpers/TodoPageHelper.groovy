@@ -97,22 +97,21 @@ class TodoPageHelper extends BaseHelper {
 
     TodoPageHelper uncompleteTask(task) {
         log.info("Uncomplete task[$task]")
+        if(page.isTaskCompleted(task)) {
+            page.clickTaskCheckbox(task)
+        }
         this
-    }
-
-    boolean isTaskUncompleted(task) {
-        boolean result = true
-        log.info("Check if task[$task] uncompleted - $result")
-        result
     }
 
     TodoPageHelper selectActiveFilter() {
         log.info("Select 'Active' filter")
+        page.clickActiveFilter()
         this
     }
 
     TodoPageHelper selectCompletedFilter() {
         log.info("Select 'Completed' filter")
+        page.clickCompletedFilter()
         this
     }
 
