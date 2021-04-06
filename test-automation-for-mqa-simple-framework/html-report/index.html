@@ -1,0 +1,1000 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Automation Test Report</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.min.css">
+    <link rel="stylesheet" href="font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="animate.css">
+    <link rel="stylesheet" type="text/css" href="select2.min.css">
+    <link rel="stylesheet" type="text/css" href="perfect-scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="util.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="jquery.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="select2.min.js"></script>
+    <script src="chart.bundle.min.js"></script>
+    <script src="perfect-scrollbar.min.js"></script>
+    <script>
+            function searchByTestCases(){
+                var searchTerm = $('.tests-search-box').val().toLowerCase();
+                $('.tests-table tr').each(function(){
+                        var toHide = true
+
+                        $(this).children('td').each(function(){
+                            if (searchTerm.length < 3 || $(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0) {
+                                toHide = false;
+                            }
+                            return;
+                        });
+
+                        if (toHide) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                 });
+
+                $('.js-pscroll')[1].scrollTop=0;
+                if (searchTerm.length < 3){
+                    return;
+                }
+                if($('.tests-table tr:visible').length){
+                    var topDelta = 210;
+                    if($('body.theme-light').length){
+                        topDelta = 220;
+                    }
+                    $('.js-pscroll')[1].scrollTop=$('.tests-table tr:visible').offset().top-topDelta;
+                }
+            }
+
+            jQuery(document).ready(function($){
+                $('.tests-table td').each(function(){
+                    $(this).attr('data-search-term', $(this).text().split('before test logs')[0].toLowerCase());
+                });
+                $('.tests-search-box').on('keyup', searchByTestCases);
+            });
+
+            function searchByLogs() {
+                var searchTerm = $('.logs-search-box').val().toLowerCase();
+
+                var configDebugEnabledScope = '.modal-body .configuration .debug, .modal-body .configuration .info, .modal-body .configuration .warn, .modal-body .configuration .err, .modal-body .configuration .error'
+                var configDebugNotEnabledScope = ''
+
+                var testCaseDebugEnabledScope = '.modal-body .test .debug, .modal-body .test .info, .modal-body .test .warn, .modal-body .test .err, .modal-body .test .error'
+                var testCaseDebugNotEnabledScope = '.modal-body .test .info, .modal-body .test .warn, .modal-body .test .err, .modal-body .test .error'
+
+                var scope
+
+                if($('.beforeButton').length) {
+                    scope = configDebugEnabledScope + ', '
+                } else {
+                    scope = configDebugNotEnabledScope
+                }
+
+                if($('.debugButton').length) {
+                    scope += testCaseDebugEnabledScope
+                } else {
+                    scope += testCaseDebugNotEnabledScope
+                }
+
+                $(scope).each(function(){
+                    $(this).attr('data-search-term', $(this).text().toLowerCase());
+                });
+
+                $(scope).each(function(){
+                       if (searchTerm.length < 3 || $(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0) {
+                            $(this).show();
+                       }else {
+                              $(this).hide();
+                       }
+                });
+            }
+
+            jQuery(document).ready(function($){
+                $('.logs-search-box').on('keyup', searchByLogs);
+            });
+
+
+            function __triggerKeyboardEvent(el, keyCode, eventType){
+                var eventObj = document.createEventObject ?
+                    document.createEventObject() : document.createEvent("Events");
+                if(eventObj.initEvent){
+                  eventObj.initEvent(eventType, true, true);
+                }
+                eventObj.keyCode = keyCode;
+                eventObj.which = keyCode;
+                el.dispatchEvent ? el.dispatchEvent(eventObj) : el.fireEvent("on" + eventType, eventObj);
+            }
+
+            jQuery(function($) {
+              function tog(v){return v?'addClass':'removeClass';}
+              $(document).on('input', '.clearable', function(){
+                $(this)[tog(this.value)]('x');
+              }).on('mousemove', '.x', function( e ){
+                $(this)[tog(this.offsetWidth-18 < e.clientX-this.getBoundingClientRect().left)]('onX');
+              }).on('click', '.onX', function(){
+                $(this).removeClass('x onX').val('');
+              });
+
+              $(document).on('click', '.tests-search-box.onX',function(){
+                searchByTestCases();
+              });
+
+              $(document).on('click', '.logs-search-box.onX',function(){
+                searchByLogs();
+              });
+
+            });
+
+
+    </script>
+    <script type="text/javascript">
+	function showTrace(el) {
+          var className = $(el).attr('class');
+          if(className=='traceButton'){
+             $(el).removeClass('traceButton');
+             $(el).addClass('traceButton-inactive');
+             $(el).parents('.error').children('.stackTrace')[0].style.display = 'block';
+             $(el).parents('.error').children('.fullStackTrace')[0].style.display = 'none';
+
+          } else {
+             $(el).removeClass('traceButton-inactive');
+             $(el).addClass('traceButton');
+             $(el).parents('.error').children('.fullStackTrace')[0].style.display = 'block';
+             $(el).parents('.error').children('.stackTrace')[0].style.display = 'none';
+          }
+      }
+
+      function showDebug(el) {
+          try{
+              var className = $(el).attr('class');
+              var childrenDebug = $(el).parents('.test').children('.debug');
+              var childrenInfo = $(el).parents('.test').children('.info');
+              if(className=='debugButton'){
+                 $(el).removeClass('debugButton');
+                 $(el).addClass('debugButton-inactive');
+                 for (var i = 0; i < childrenDebug.length; i++){
+                    childrenDebug[i].style.display = 'none';
+                 }
+                 for (var i = 0; i < childrenInfo.length; i++){
+                    $(childrenInfo[i]).removeClass('highlight');
+                 }
+              } else {
+                 $(el).removeClass('debugButton-inactive');
+                 $(el).addClass('debugButton');
+                 for (var i = 0; i < childrenDebug.length; i++){
+                    childrenDebug[i].style.display = 'block';
+                 }
+                 for (var i = 0; i < childrenInfo.length; i++){
+                    $(childrenInfo[i]).addClass('highlight');
+                 }
+                 searchByLogs();
+              }
+          }catch(err){}
+      }
+
+      function showConfig(el) {
+          try{
+              var childrenInfo = $(el).parents('.configuration').children('.info');
+              var childrenDebug = $(el).parents('.configuration').children('.debug');
+              var className = $(el).attr('class');
+              if(className=='beforeButton'){
+                 $(el).removeClass('beforeButton');
+                 $(el).addClass('beforeButton-inactive');
+                 for (var i = 0; i < childrenInfo.length; i++){
+                    childrenInfo[i].style.display = 'none';
+                 }
+                 for (var i = 0; i < childrenDebug.length; i++){
+                    childrenDebug[i].style.display = 'none';
+                 }
+              } else {
+                 $(el).removeClass('beforeButton-inactive');
+                 $(el).addClass('beforeButton');
+                 for (var i = 0; i < childrenInfo.length; i++){
+                    childrenInfo[i].style.display = 'block';
+                    $(childrenInfo[i]).addClass('highlight');
+                 }
+                 for (var i = 0; i < childrenDebug.length; i++){
+                    childrenDebug[i].style.display = 'block';
+                 }
+                 searchByLogs();
+              }
+          }catch(err){
+          throw err
+          }
+      }
+
+      function hidePassed(){
+          var suites = $("#suites-table").children('table').children('tbody').children('tr')
+          suites.each(function(i){
+              if($($(this).children('td').get(2)).text()==$($(this).children('td').get(3)).text()){
+                $(this).hide()
+              }
+          });
+          $("#analyzeOn").hide();
+          $("#analyzeOff").show();
+      };
+
+        function showPassed(){
+          var suites = $("#suites-table").children('table').children('tbody').children('tr')
+            suites.each(function(i){
+                if($($(this).children('td').get(2)).text()==$($(this).children('td').get(3)).text()){
+                  $(this).show()
+                }
+            });
+          $("#analyzeOff").hide();
+          $("#analyzeOn").show();
+        }
+
+        function showTestCaseReport(el) {
+          try{
+              var logs = $(el).parents('.column32').children('#test_case_report').eq(0).html();
+              $('#testCaseModal').find('.modal-body').eq(0).html(logs);
+          }catch(err){}
+      }
+
+      function markNotPassed(){
+        var suites = $($("span:contains('Test Suites statistics')").nextAll('div.containerDiv').get(0)).children('div.rowDiv')
+          suites.each(function(i){
+              if($($(this).children('div').get(4)).text()!='0'){
+                  $($(this).children('div').get(4)).css("background-color", "#ff7c7c")
+              }
+              if($($(this).children('div').get(5)).text()!='0'){
+                  $($(this).children('div').get(5)).css("background-color", "#feff6e")
+              }
+              if($($(this).children('div').get(6)).text()!='0'){
+                  $($(this).children('div').get(6)).css("background-color", "#c3c3c3")
+              }
+          })
+      };
+
+
+
+    </script>
+
+</head>
+<body class="theme-default">
+<div style="max-height: 97.5%;min-height: 70vh;">
+    <!-- Test Case Modal -->
+    <div class="modal" id="testCaseModal" tabindex="-1" role="dialog" aria-labelledby="testCaseModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header theme-default">
+                    <input type="text" class="logs-search-box clearable" placeholder="search here"/>
+                    <button type="button" class="close theme-default" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="testCaseModalLabel">Test-case report</h4>
+                </div>
+                <div class="modal-body theme-default table100-body js-pscroll ps">
+                    ...
+                </div>
+                <div class="modal-footer theme-default">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <table style="position: fixed; width:100%; z-index:1000; font-size:5px;">
+            <thead>
+            <tr class="head">
+                <th class="cell100" style="background-color:#87de58; width:33.33%"> .</th>
+                <th class="cell100" style="background-color:#ff3f58; width:50.0%"> .</th>
+                <th class="cell100" style="background-color:#f9e516; width:16.67%"> .</th>
+                <th class="cell100" style="background-color:#afafaf; width:0%; display: none"> .</th>
+            </tr>
+            </thead>
+        </table>
+        <div class="table100 theme-default m-b-110 top-table" onclick="$('.js-pscroll')[1].scrollTop=0"
+             style="cursor:pointer;">
+            <div class="table100-head">
+                <table>
+                    <thead>
+                    <tr class="row100 head">
+                        <th class="cell100 column11">Test statistics</th>
+                        <th class="cell100 column12">Duration</th>
+                        <th class="cell100 column13">Total</th>
+                        <th class="cell100 column14">Passed</th>
+                        <th class="cell100 column15">Failed</th>
+                        <th class="cell100 column16">Broken</th>
+                        <th class="cell100 column17">Skipped</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="table100-body">
+                <table>
+                    <tbody>
+                    <tr class="row100 body">
+                        <td class="cell100 column11">2021-04-01</td>
+                        <td class="cell100 column12">0 hr 0 min 14 sec </td>
+                        <td class="cell100 column13">6</td>
+                        <td class="cell100 column14">2</td>
+                        <td class="cell100 column15">3</td>
+                        <td class="cell100 column16">1</td>
+                        <td class="cell100 column17">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                </div>
+                <div class="ps__rail-y" style="top: 0px; height: 585px; right: 5px;">
+                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="top-container theme-default">
+            <input type="text" class="tests-search-box clearable" placeholder="search here"/>
+            <button id="analyzeOff" type="button" class="btn btn-danger btn-xs top-button" style="display: none;"
+                    onclick="showPassed()">Analyze
+            </button>
+            <button id="analyzeOn" type="button" class="btn btn-default btn-xs top-button theme-default"
+                    onclick="hidePassed()">Analyze
+            </button>
+            <button data-toggle="modal" data-target="#pieChartModal" type="button"
+                    class="btn btn-success btn-xs top-button">Details
+            </button>
+        </div>
+    </div>
+    <div class="footer theme-default">
+        <center>Automation Test Report by Oxagile</center>
+    </div>
+    <button type="button" class="btn btn-primary btn-xs up-button theme-default"
+            onclick="$('.js-pscroll')[1].scrollTop=0"><i class="fa fa-angle-up"></i></button>
+
+
+    <div class="limiter">
+        <div class="container-table100 theme-default">
+            <div class="wrap-table100 theme-default js-pscroll ps" style="height: 80vh;">
+                <span class="theme-default" style='font-size: 24px'>Test Suites statistics</span>
+                <div class="table100 theme-default m-b-110 suites-table">
+                    <div class="table100-head">
+                        <table>
+                            <thead>
+                            <tr class="row100 head">
+                                <th class="cell100 column21">Test Suite</th>
+                                <th class="cell100 column22">Duration</th>
+                                <th class="cell100 column23">Total</th>
+                                <th class="cell100 column24">Passed</th>
+                                <th class="cell100 column25">Failed</th>
+                                <th class="cell100 column26">Broken</th>
+                                <th class="cell100 column27">Skipped</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div id="suites-table" class="table100-body">
+                        <table>
+                            <tbody>
+
+
+            <tr class="row100 body">
+                <td class="cell100 column21"><a class='link theme-default' href='#TodoAppTest'>TodoAppTest</a></td>
+                <td class="cell100 column22">0 hr 0 min 14 sec</td>
+                <td class="cell100 column23">6</td>
+                <td class="cell100 column24">2</td>
+                <td class="cell100 column25">
+                    <button class="btn btn-xs status-btn failed">3</button>
+                </td>
+                <td class="cell100 column26">
+                    <button class="btn btn-xs status-btn broken">1</button>
+                </td>
+                <td class="cell100 column27">
+                    0
+                </td>
+            </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+
+            <br>
+            <a class='anchor theme-default' name='TodoAppTest'></a>
+            <span class='theme-default' style='font-size: 18px'>TodoAppTest statistics</span>
+            <br>
+            <div class="table100 theme-default m-b-110">
+                            <div class="table100-head">
+                                <table>
+                                    <thead>
+                                    <tr class="row100 head">
+                                        <th class="cell100 column31">No</th>
+                                        <th class="cell100 column32">Test Name</th>
+                                        <th class="cell100 column33">Story</th>
+                                        <th class="cell100 column34">Duration</th>
+                                        <th class="cell100 column35">Comment</th>
+                                        <th class="cell100 column36">Status</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="table100-body tests-table">
+                                <table>
+                                    <tbody>
+        
+
+                <tr class="row100 body rowPassed">
+                    <td class="cell100 column31">1</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Navigate test
+                        </a>
+                        <div id='test_case_report' style='display:none'><div class="info">2021-04-01 16:53:17,393 INFO - browser=chrome<br></div><div class="info">2021-04-01 16:53:17,404 INFO - base.url=https://todomvc.com/examples/angularjs/#/<br></div>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:17,640 INFO - Launch browser chrome<br></div></div>
+            <div class="test">
+                <a name="Navigate test1617285199611"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Navigate test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:19,613 DEBUG - Method: project.tests.TodoAppTest.navigateTest<br></div><div class="info">2021-04-01 16:53:19,616 INFO - Navigate Todo app<br></div><div class="info">2021-04-01 16:53:20,890 INFO - Check if todo header displayed - true<br></div><div class="info">2021-04-01 16:53:20,936 INFO - Check if input field displayed - true<br></div><div class="debug">2021-04-01 16:53:20,938 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:20,968 INFO - Check input placeholder text - What needs to be done?<br></div><div class="info">2021-04-01 16:53:21,2 INFO - Check if footer displayed - false<br></div><br><div class="green">2021-04-01 16:53:21,7 INFO - Test PASSED<br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 1 sec</td>
+                    <td class="cell100 column35"></td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn passed">
+                            PASSED
+                        </button>
+                    </td>
+                </tr>
+            
+                <tr class="row100 body rowPassed">
+                    <td class="cell100 column31">2</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Create task test
+                        </a>
+                        <div id='test_case_report' style='display:none'>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:21,732 INFO - Navigate Todo app<br></div></div>
+            <div class="test">
+                <a name="Create task test1617285202350"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Create task test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:22,351 DEBUG - Method: project.tests.TodoAppTest.createTaskTest<br></div><div class="info">2021-04-01 16:53:22,352 INFO - Create a new task - MY test task<br></div><div class="debug">2021-04-01 16:53:22,355 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:22,407 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:22,527 INFO - Check if task[MY test task] displayed - true<br></div><div class="debug">2021-04-01 16:53:22,529 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')]<br></div><div class="info">2021-04-01 16:53:22,560 INFO - Check items left counter text - 1 item left<br></div><br><div class="green">2021-04-01 16:53:22,560 INFO - Test PASSED<br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 0 sec</td>
+                    <td class="cell100 column35"></td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn passed">
+                            PASSED
+                        </button>
+                    </td>
+                </tr>
+            
+                <tr class="row100 body rowFailed">
+                    <td class="cell100 column31">3</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Edit task test
+                        </a>
+                        <div id='test_case_report' style='display:none'>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:23,450 INFO - Navigate Todo app<br></div></div>
+            <div class="test">
+                <a name="Edit task test1617285204074"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Edit task test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:24,74 DEBUG - Method: project.tests.TodoAppTest.editTaskTest<br></div><div class="info">2021-04-01 16:53:24,75 INFO - Create a new task - MY test task<br></div><div class="debug">2021-04-01 16:53:24,75 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:24,121 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:24,190 INFO - Select 'All' filter<br></div><div class="debug">2021-04-01 16:53:24,191 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All']<br></div><div class="info">2021-04-01 16:53:24,275 INFO - Update task[MY test task] name - MY test new task<br></div><div class="debug">2021-04-01 16:53:24,289 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY test task']<br></div><div class="info">2021-04-01 16:53:24,564 INFO - Check if task[MY test new task] displayed - false<br></div><div class="err">2021-04-01 16:53:24,569 ERROR - User not able to edit existing task expected [true] but found [false]<br></div>
+                <br>
+                <div class="error">
+                    <div>
+                        <button class="traceButton-inactive" onclick="showTrace(this)">Full</button>
+                    </div>
+                    <div class="stackTrace">
+                        User not able to edit existing task expected [true] but found [false]<br><br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:240)<br>project.tests.TodoAppTest.editTaskTest(TodoAppTest.groovy:52)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                    <div class="fullStackTrace">
+                        User not able to edit existing task expected [true] but found [false]<br><br>org.testng.Assert.fail(Assert.java:96)<br>org.testng.Assert.failNotEquals(Assert.java:776)<br>org.testng.Assert.assertTrue(Assert.java:44)<br>org.testng.Assert$assertTrue$0.callStatic(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:240)<br>project.tests.TodoAppTest.editTaskTest(TodoAppTest.groovy:52)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)<br>org.testng.internal.Invoker.invokeMethod(Invoker.java:583)<br>org.testng.internal.Invoker.invokeTestMethod(Invoker.java:719)<br>org.testng.internal.Invoker.invokeTestMethods(Invoker.java:989)<br>org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)<br>org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)<br>org.testng.TestRunner.privateRun(TestRunner.java:648)<br>org.testng.TestRunner.run(TestRunner.java:505)<br>org.testng.SuiteRunner.runTest(SuiteRunner.java:455)<br>org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)<br>org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)<br>org.testng.SuiteRunner.run(SuiteRunner.java:364)<br>org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)<br>org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)<br>org.testng.TestNG.runSuitesSequentially(TestNG.java:1208)<br>org.testng.TestNG.runSuitesLocally(TestNG.java:1137)<br>org.testng.TestNG.runSuites(TestNG.java:1049)<br>org.testng.TestNG.run(TestNG.java:1017)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                </div>
+        
+                <div class="image">
+                    <br>
+                    <img width="" alt="Edit_task_test10201617285204967.png" src="Edit_task_test10201617285204967.png" style="border:1px solid #9a9a9a"
+                        onclick="window.open(this.src)">
+                </div>
+            <br><div class="err"><br>2021-04-01 16:53:24,976 ERROR - Test FAILED. User not able to edit existing task expected [true] but found [false]<br><br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 0 sec</td>
+                    <td class="cell100 column35">User not able to edit existing task expected [true] but found [false]</td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn failed">
+                            FAILED
+                        </button>
+                    </td>
+                </tr>
+            
+                <tr class="row100 body rowFailed">
+                    <td class="cell100 column31">4</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Delete task test
+                        </a>
+                        <div id='test_case_report' style='display:none'>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:25,646 INFO - Navigate Todo app<br></div></div>
+            <div class="test">
+                <a name="Delete task test1617285206298"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Delete task test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:26,298 DEBUG - Method: project.tests.TodoAppTest.deleteTaskTest<br></div><div class="info">2021-04-01 16:53:26,298 INFO - Create a new task - MY task 1<br></div><div class="debug">2021-04-01 16:53:26,299 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:26,345 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:26,406 INFO - Create a new task - MY task 2<br></div><div class="debug">2021-04-01 16:53:26,406 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:26,438 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:26,478 INFO - Select 'All' filter<br></div><div class="debug">2021-04-01 16:53:26,479 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All']<br></div><div class="info">2021-04-01 16:53:26,549 INFO - Delete task[MY task 1]<br></div><div class="debug">2021-04-01 16:53:26,550 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY task 1']<br></div><div class="debug">2021-04-01 16:53:26,565 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY task 1']/..//button<br></div><div class="info">2021-04-01 16:53:26,845 INFO - Check if task[MY task 1] displayed - false<br></div><div class="debug">2021-04-01 16:53:26,845 DEBUG - Getting element - //footer//span[contains(@class, 'todo-count')]<br></div><div class="info">2021-04-01 16:53:26,870 INFO - Check items left counter text - 3 items left<br></div><div class="err">2021-04-01 16:53:26,871 ERROR - Wrong items counter after delete expected [1 item left] but found [3 items left]<br></div>
+                <br>
+                <div class="error">
+                    <div>
+                        <button class="traceButton-inactive" onclick="showTrace(this)">Full</button>
+                    </div>
+                    <div class="stackTrace">
+                        Wrong items counter after delete expected [1 item left] but found [3 items left]<br><br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:249)<br>project.tests.TodoAppTest.deleteTaskTest(TodoAppTest.groovy:64)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                    <div class="fullStackTrace">
+                        Wrong items counter after delete expected [1 item left] but found [3 items left]<br><br>org.testng.Assert.fail(Assert.java:96)<br>org.testng.Assert.failNotEquals(Assert.java:776)<br>org.testng.Assert.assertEqualsImpl(Assert.java:137)<br>org.testng.Assert.assertEquals(Assert.java:118)<br>org.testng.Assert.assertEquals(Assert.java:453)<br>org.testng.Assert$assertEquals$1.callStatic(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:249)<br>project.tests.TodoAppTest.deleteTaskTest(TodoAppTest.groovy:64)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)<br>org.testng.internal.Invoker.invokeMethod(Invoker.java:583)<br>org.testng.internal.Invoker.invokeTestMethod(Invoker.java:719)<br>org.testng.internal.Invoker.invokeTestMethods(Invoker.java:989)<br>org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)<br>org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)<br>org.testng.TestRunner.privateRun(TestRunner.java:648)<br>org.testng.TestRunner.run(TestRunner.java:505)<br>org.testng.SuiteRunner.runTest(SuiteRunner.java:455)<br>org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)<br>org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)<br>org.testng.SuiteRunner.run(SuiteRunner.java:364)<br>org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)<br>org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)<br>org.testng.TestNG.runSuitesSequentially(TestNG.java:1208)<br>org.testng.TestNG.runSuitesLocally(TestNG.java:1137)<br>org.testng.TestNG.runSuites(TestNG.java:1049)<br>org.testng.TestNG.run(TestNG.java:1017)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                </div>
+        
+                <div class="image">
+                    <br>
+                    <img width="" alt="Delete_task_test54551617285207226.png" src="Delete_task_test54551617285207226.png" style="border:1px solid #9a9a9a"
+                        onclick="window.open(this.src)">
+                </div>
+            <br><div class="err"><br>2021-04-01 16:53:27,228 ERROR - Test FAILED. Wrong items counter after delete expected [1 item left] but found [3 items left]<br><br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 0 sec</td>
+                    <td class="cell100 column35">Wrong items counter after delete expected [1 item left] but found [3 items left]</td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn failed">
+                            FAILED
+                        </button>
+                    </td>
+                </tr>
+            
+                <tr class="row100 body rowFailed">
+                    <td class="cell100 column31">5</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Delete the last task test
+                        </a>
+                        <div id='test_case_report' style='display:none'>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:27,908 INFO - Navigate Todo app<br></div></div>
+            <div class="test">
+                <a name="Delete the last task test1617285208545"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Delete the last task test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:28,546 DEBUG - Method: project.tests.TodoAppTest.deleteTheLastTaskTest<br></div><div class="info">2021-04-01 16:53:28,546 INFO - Create a new task - MY task<br></div><div class="debug">2021-04-01 16:53:28,547 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:28,593 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:28,652 INFO - Delete task[MY task]<br></div><div class="debug">2021-04-01 16:53:28,652 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY task']<br></div><div class="debug">2021-04-01 16:53:28,667 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//button<br></div><div class="info">2021-04-01 16:53:28,976 INFO - Check if task[MY task] displayed - false<br></div><div class="info">2021-04-01 16:53:29,1 INFO - Check if footer displayed - true<br></div><div class="err">2021-04-01 16:53:29,1 ERROR - Footer is displayed expected [false] but found [true]<br></div>
+                <br>
+                <div class="error">
+                    <div>
+                        <button class="traceButton-inactive" onclick="showTrace(this)">Full</button>
+                    </div>
+                    <div class="stackTrace">
+                        Footer is displayed expected [false] but found [true]<br><br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:240)<br>project.tests.TodoAppTest.deleteTheLastTaskTest(TodoAppTest.groovy:73)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                    <div class="fullStackTrace">
+                        Footer is displayed expected [false] but found [true]<br><br>org.testng.Assert.fail(Assert.java:96)<br>org.testng.Assert.failNotEquals(Assert.java:776)<br>org.testng.Assert.assertFalse(Assert.java:65)<br>org.testng.Assert$assertFalse$2.callStatic(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:217)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:240)<br>project.tests.TodoAppTest.deleteTheLastTaskTest(TodoAppTest.groovy:73)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)<br>org.testng.internal.Invoker.invokeMethod(Invoker.java:583)<br>org.testng.internal.Invoker.invokeTestMethod(Invoker.java:719)<br>org.testng.internal.Invoker.invokeTestMethods(Invoker.java:989)<br>org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)<br>org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)<br>org.testng.TestRunner.privateRun(TestRunner.java:648)<br>org.testng.TestRunner.run(TestRunner.java:505)<br>org.testng.SuiteRunner.runTest(SuiteRunner.java:455)<br>org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)<br>org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)<br>org.testng.SuiteRunner.run(SuiteRunner.java:364)<br>org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)<br>org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)<br>org.testng.TestNG.runSuitesSequentially(TestNG.java:1208)<br>org.testng.TestNG.runSuitesLocally(TestNG.java:1137)<br>org.testng.TestNG.runSuites(TestNG.java:1049)<br>org.testng.TestNG.run(TestNG.java:1017)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                </div>
+        
+                <div class="image">
+                    <br>
+                    <img width="" alt="Delete_the_last_task_test14291617285209361.png" src="Delete_the_last_task_test14291617285209361.png" style="border:1px solid #9a9a9a"
+                        onclick="window.open(this.src)">
+                </div>
+            <br><div class="err"><br>2021-04-01 16:53:29,364 ERROR - Test FAILED. Footer is displayed expected [false] but found [true]<br><br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 0 sec</td>
+                    <td class="cell100 column35">Footer is displayed expected [false] but found [true]</td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn failed">
+                            FAILED
+                        </button>
+                    </td>
+                </tr>
+            
+                <tr class="row100 body rowBroken">
+                    <td class="cell100 column31">6</td>
+                    <td class="cell100 column32">
+                        <a class='link theme-default' data-toggle='modal' data-target='#testCaseModal' onclick='showTestCaseReport(this)'>
+                        Complete task test
+                        </a>
+                        <div id='test_case_report' style='display:none'>
+            <div class='configuration'>
+                <button class='beforeButton-inactive' onclick='showConfig(this)'>before test logs</button>
+                <br>
+        <div class="info">2021-04-01 16:53:30,46 INFO - Navigate Todo app<br></div></div>
+            <div class="test">
+                <a name="Complete task test1617285210692"></a>
+                <br>
+                <div class="title">
+                    <div style="float: right; padding-right: 1%">
+                        <button class="debugButton-inactive" onclick="showDebug(this)">debug</button>
+                    </div>
+                    Complete task test
+                    <button id="story" class="btn btn-success btn-xs">
+                        <a class='storylink' href='browse/' target='_blank'>
+                            
+                        </a>
+                    </button>
+            </div>
+            <br>
+        <div class="debug">2021-04-01 16:53:30,693 DEBUG - Method: project.tests.TodoAppTest.completeTaskTest<br></div><div class="info">2021-04-01 16:53:30,694 INFO - Create a new task - MY task<br></div><div class="debug">2021-04-01 16:53:30,695 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="debug">2021-04-01 16:53:30,751 DEBUG - Getting element - //input[contains(@class, 'new-todo')]<br></div><div class="info">2021-04-01 16:53:30,813 INFO - Select 'All' filter<br></div><div class="debug">2021-04-01 16:53:30,813 DEBUG - Getting element - //footer//ul[contains(@class, 'filters')]//a[text()='All']<br></div><div class="info">2021-04-01 16:53:30,886 INFO - Complete task[MY task]<br></div><div class="debug">2021-04-01 16:53:30,900 DEBUG - Getting element - //ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']<br></div>
+                <br>
+                <div class="error">
+                    <div>
+                        <button class="traceButton-inactive" onclick="showTrace(this)">Full</button>
+                    </div>
+                    <div class="stackTrace">
+                        no such element: Unable to locate element: {"method":"xpath","selector":"//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']"}<br>  (Session info: chrome=89.0.4389.90)<br>For documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html<br>Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'<br>System info: host: 'P-DOROSCHENKOM', ip: '192.168.35.128', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_121'<br>Driver info: org.openqa.selenium.chrome.ChromeDriver<br>Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 89.0.4389.90, chrome: {chromedriverVersion: 89.0.4389.23 (61b08ee2c5002..., userDataDir: C:\Users\DOROSC~1\AppData\L...}, goog:chromeOptions: {debuggerAddress: localhost:64435}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}<br>Session ID: 9e4b2c2a58d8adea21c6a27ba2006c1b<br>*** Element info: {Using=xpath, value=//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']}<br><br>sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)<br>sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)<br>sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)<br>java.lang.reflect.Constructor.newInstance(Constructor.java:423)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:187)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:122)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:49)<br>org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:158)<br>org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)<br>org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:552)<br>org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:323)<br>org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:428)<br>org.openqa.selenium.By$ByXPath.findElement(By.java:353)<br>org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:315)<br>my.testframework.utils.uielements.WebElement.getElement(WebElement.groovy:21)<br>my.testframework.utils.uielements.BaseWebElement.click(BaseWebElement.groovy:17)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:130)<br>project.pages.TodoPage.clickTaskCkeckbox(TodoPage.groovy:104)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)<br>project.helpers.TodoPageHelper.completeTask(TodoPageHelper.groovy:81)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)<br>project.tests.TodoAppTest.completeTaskTest(TodoAppTest.groovy:79)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                    <div class="fullStackTrace">
+                        no such element: Unable to locate element: {"method":"xpath","selector":"//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']"}<br>  (Session info: chrome=89.0.4389.90)<br>For documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html<br>Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'<br>System info: host: 'P-DOROSCHENKOM', ip: '192.168.35.128', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_121'<br>Driver info: org.openqa.selenium.chrome.ChromeDriver<br>Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 89.0.4389.90, chrome: {chromedriverVersion: 89.0.4389.23 (61b08ee2c5002..., userDataDir: C:\Users\DOROSC~1\AppData\L...}, goog:chromeOptions: {debuggerAddress: localhost:64435}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}<br>Session ID: 9e4b2c2a58d8adea21c6a27ba2006c1b<br>*** Element info: {Using=xpath, value=//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']}<br><br>sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)<br>sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)<br>sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)<br>java.lang.reflect.Constructor.newInstance(Constructor.java:423)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:187)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:122)<br>org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:49)<br>org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:158)<br>org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)<br>org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:552)<br>org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:323)<br>org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:428)<br>org.openqa.selenium.By$ByXPath.findElement(By.java:353)<br>org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:315)<br>org.openqa.selenium.WebDriver$findElement$2.call(Unknown Source)<br>my.testframework.utils.uielements.WebElement.getElement(WebElement.groovy:21)<br>my.testframework.utils.uielements.BaseWebElement.click(BaseWebElement.groovy:17)<br>org.openqa.selenium.WebElement$click$7.call(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:130)<br>project.pages.TodoPage.clickTaskCkeckbox(TodoPage.groovy:104)<br>project.pages.TodoPage$clickTaskCkeckbox$11.call(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)<br>project.helpers.TodoPageHelper.completeTask(TodoPageHelper.groovy:81)<br>project.helpers.TodoPageHelper$completeTask$10.call(Unknown Source)<br>org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)<br>org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)<br>project.tests.TodoAppTest.completeTaskTest(TodoAppTest.groovy:79)<br>sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br>sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br>sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br>java.lang.reflect.Method.invoke(Method.java:498)<br>org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)<br>org.testng.internal.Invoker.invokeMethod(Invoker.java:583)<br>org.testng.internal.Invoker.invokeTestMethod(Invoker.java:719)<br>org.testng.internal.Invoker.invokeTestMethods(Invoker.java:989)<br>org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)<br>org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)<br>org.testng.TestRunner.privateRun(TestRunner.java:648)<br>org.testng.TestRunner.run(TestRunner.java:505)<br>org.testng.SuiteRunner.runTest(SuiteRunner.java:455)<br>org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)<br>org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)<br>org.testng.SuiteRunner.run(SuiteRunner.java:364)<br>org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)<br>org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)<br>org.testng.TestNG.runSuitesSequentially(TestNG.java:1208)<br>org.testng.TestNG.runSuitesLocally(TestNG.java:1137)<br>org.testng.TestNG.runSuites(TestNG.java:1049)<br>org.testng.TestNG.run(TestNG.java:1017)<br>org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:283)<br>org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:75)<br>org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:120)<br>org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:377)<br>org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:138)<br>org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:465)<br>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:451)
+                    </div>
+                </div>
+        
+                <div class="image">
+                    <br>
+                    <img width="" alt="Complete_task_test20491617285211307.png" src="Complete_task_test20491617285211307.png" style="border:1px solid #9a9a9a"
+                        onclick="window.open(this.src)">
+                </div>
+            <br><div class="warn"><br>2021-04-01 16:53:31,310 ERROR - no such element: Unable to locate element: {"method":"xpath","selector":"//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']"}
+  (Session info: chrome=89.0.4389.90)
+For documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'P-DOROSCHENKOM', ip: '192.168.35.128', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_121'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 89.0.4389.90, chrome: {chromedriverVersion: 89.0.4389.23 (61b08ee2c5002..., userDataDir: C:\Users\DOROSC~1\AppData\L...}, goog:chromeOptions: {debuggerAddress: localhost:64435}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}
+Session ID: 9e4b2c2a58d8adea21c6a27ba2006c1b
+*** Element info: {Using=xpath, value=//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']}<br><br></div></div></div>
+                    </td>
+                    <td class="cell100 column33">
+                        <a class='link theme-default' href='browse/'target='_blank'></a>
+                    </td>
+                    <td class="cell100 column34">0 min 0 sec</td>
+                    <td class="cell100 column35">no such element: Unable to locate element: {"method":"xpath","selector":"//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']"}
+  (Session info: chrome=89.0.4389.90)
+For documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'P-DOROSCHENKOM', ip: '192.168.35.128', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_121'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 89.0.4389.90, chrome: {chromedriverVersion: 89.0.4389.23 (61b08ee2c5002..., userDataDir: C:\Users\DOROSC~1\AppData\L...}, goog:chromeOptions: {debuggerAddress: localhost:64435}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}
+Session ID: 9e4b2c2a58d8adea21c6a27ba2006c1b
+*** Element info: {Using=xpath, value=//ul[contains(@class, 'todo-list')]//label[text()='MY task']/..//input[@class='toggle']}</td>
+                    <td class="cell100 column36">
+                        <button class="btn btn-xs status-btn broken">
+                            BROKEN
+                        </button>
+                    </td>
+                </tr>
+            
+</tbody>
+                    </table>
+                </div>
+            </div>
+        
+
+<!-- Pie Chart Modal -->
+<div class="modal" id="pieChartModal" tabindex="-1" role="dialog" aria-labelledby="pieChartModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header theme-default">
+                <button type="button" class="close theme-default" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="testCaseModalLabel">Details</h4>
+            </div>
+            <div class="modal-body theme-default">
+                <div id="modalChart">
+                    <div id="canvas-holder"
+                         style="width:40%; margin-top:50px; margin-left:50px; display: inline-block;">
+                        <canvas id="testResultsChart"></canvas>
+                    </div>
+                    <div id="canvas-holder"
+                         style="width:40%; margin-top:50px; margin-left:50px; display: inline-block;">
+                        <canvas id="notPassedChart"></canvas>
+                    </div>
+                    <br>
+                    <br>
+                    <h4>Known bugs</h4>
+                    <div id="knownBugs"></div>
+                    <br>
+                    <br>
+                    <h4>Fixed bugs</h4>
+                    <div id="fixedBugs"></div>
+                    <script>
+                        var total = 6
+                        var ctx = document.getElementById('testResultsChart').getContext('2d');
+                        var data = {
+                                     labels: ["Passed", "Failed", "Broken", "Skipped"],
+                                     datasets: [{
+                                         label: "dataset",
+                                         backgroundColor: [
+                                                           "#87de58",
+                                                           "#ff3f58",
+                                                           "#FFFF19",
+                                                           "#abadae",
+                                                       ],
+                                         hoverBackgroundColor: [
+                                                           "#87de58",
+                                                           "#ff3f58",
+                                                           "#FFFF19",
+                                                           "#abadae",
+                                                       ],
+                                         borderWidth:0,
+                                         data: [
+                                             2,
+                                             3,
+                                             1,
+                                             0
+                                         ]
+                                     }],
+
+                        }
+
+                        var myDoughnutChart = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: data,
+                            options: {
+                                                    responsive: true,
+                                                    legend: {
+                                                        position: 'bottom',
+                                                    },
+                                                    title: {
+                                                        display: true,
+                                                        text: 'Test run results',
+                                                        fontSize: 26,
+                                                        fontFamily: "'Lato-Regular'",
+                                                        fontStyle: 'regular',
+                                                        fontColor: '#808080'
+                                                    },
+                                                    animation: {
+                                                        animateScale: true,
+                                                        animateRotate: true
+                                                    },
+                                                    tooltips: {
+                                                                callbacks: {
+                                                                    label: function(tooltipItem, data) {
+                                                                        var label = data.labels[tooltipItem.index]
+                                                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+                                                                        return label + ': ' + Math.round(((value/total)*100) * 100) / 100 + '% (' + value + ')';
+                                                                    }
+                                                                },
+                                                                mode: 'nearest'
+                                                            },
+                                                }
+                        });
+
+
+
+
+
+
+
+
+
+                    </script>
+                    <script>
+                      var totalNotPassed = $('.rowFailed').length + $('.rowSkipped').length + $('.rowBroken').length
+                      var known = $('.rowFailed').find("td").children("button").children(".issuelink").length
+                        + $('.rowSkipped').find("td").children("button").children(".issuelink").length
+                        + $('.rowBroken').find("td").children("button").children(".issuelink").length;
+
+                        var ctx = document.getElementById('notPassedChart').getContext('2d');
+                        var data = {
+                                     labels: ["Unknown", "Known bugs"],
+                                     datasets: [{
+                                         label: "dataset",
+                                         backgroundColor: [
+                                                           "#abadae",
+                                                           "#ff3f58",
+                                                       ],
+                                         hoverBackgroundColor: [
+                                                           "#abadae",
+                                                           "#ff3f58",
+                                                       ],
+                                         borderWidth:0,
+                                         data: [
+                                            totalNotPassed - known,
+                                            known,
+                                         ]
+                                     }],
+
+                        }
+
+                        var myDoughnutChart = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: data,
+                            options: {
+                                                    responsive: true,
+                                                    legend: {
+                                                        position: 'bottom',
+                                                    },
+                                                    title: {
+                                                        display: true,
+                                                        text: 'Not passed tests',
+                                                        fontSize: 26,
+                                                        fontStyle: 'regular',
+                                                        fontFamily: "'Lato-Regular'",
+                                                        fontColor: '#808080'
+                                                    },
+                                                    animation: {
+                                                        animateScale: true,
+                                                        animateRotate: true
+                                                    },
+                                                    tooltips: {
+                                                                callbacks: {
+                                                                    label: function(tooltipItem, data) {
+                                                                        var label = data.labels[tooltipItem.index]
+                                                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+                                                                        return label + ': ' + Math.round(((value/totalNotPassed)*100) * 100) / 100 + '% (' + value + ')';
+                                                                    }
+                                                                },
+                                                                mode: 'nearest'
+                                                            }
+                                                }
+                        });
+                        var bugs = []
+                        function findKnownBugs(){
+
+                            var result = []
+                            $('.rowFailed').find("td").children("button").children(".issuelink").each(function(i){
+                            if(jQuery.inArray($(this).attr('href'), bugs)==-1){
+                                bugs.push($(this).attr('href'))
+                                result.push($($(this)).parent().prop('outerHTML'));
+                            }
+                            });
+
+                            $('.rowBroken').find("td").children("button").children(".issuelink").each(function(i){
+                            if(jQuery.inArray($(this).attr('href'), bugs)==-1){
+                                bugs.push($(this).attr('href'))
+                                result.push($($(this)).parent().prop('outerHTML'));
+                            }
+                            });
+
+                            $('.rowSkipped').find("td").children("button").children(".issuelink").each(function(i){
+                            if(jQuery.inArray($(this).attr('href'), bugs)==-1){
+                                bugs.push($(this).attr('href'))
+                                result.push($($(this)).parent().prop('outerHTML'));
+                            }
+                            });
+                            $('#knownBugs').html(result);
+                        }
+
+                        function findFixedBugs(){
+                            var fixedBugs = []
+                            var result = []
+                            $('.rowPassed').find("td").children("button").children(".issuelink").each(function(i){
+                            if(jQuery.inArray($(this).attr('href'), bugs)==-1 && jQuery.inArray($(this).attr('href'), fixedBugs)==-1){
+                                fixedBugs.push($(this).attr('href'))
+                                result.push($($(this)).parent().prop('outerHTML'));
+                            }
+                            });
+                            $('#fixedBugs').html(result);
+                        }
+
+                        findKnownBugs();
+                        findFixedBugs();
+                        markNotPassed();
+
+
+                    </script>
+                </div>
+
+            </div>
+            <div class="modal-footer theme-default">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+            $('.js-pscroll').each(function(){
+                var ps = new PerfectScrollbar(this, {minScrollbarLength: 70});
+                $(window).on('resize', function(){
+                    ps.update();
+                })
+            });
+
+            function setExplicitModalStyle(){
+                $('#testCaseModal')[0].style="display: block;"
+            };
+
+            $('#testCaseModal').on('shown.bs.modal',setExplicitModalStyle);
+
+            $(window).on('resize', function(){
+                if($('#testCaseModal')[0].style.display=='block') {
+                setTimeout(function() { setExplicitModalStyle() }, 300);
+                }
+            });
+
+</script>
+</body></html>
