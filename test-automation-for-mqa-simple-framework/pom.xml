@@ -169,6 +169,11 @@
             <version>2.0.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>aqa.framework.core</groupId>
+            <artifactId>api-tools</artifactId>
+            <version>2.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

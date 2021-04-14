@@ -2,19 +2,19 @@ package project.tests
 
 import my.testframework.utils.DriverManager
 import my.testframework.utils.Reporter
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
+import org.testng.annotations.AfterTest
+import org.testng.annotations.BeforeTest
 import org.testng.annotations.Listeners
 
 @Listeners([Reporter])
 class BaseTest {
 
-    @BeforeClass
+    @BeforeTest
     void launchBrowser() {
         DriverManager.launchBrowser()
     }
 
-    @AfterClass
+    @AfterTest
     void closeBrowser() {
         DriverManager.closeBrowser()
     }

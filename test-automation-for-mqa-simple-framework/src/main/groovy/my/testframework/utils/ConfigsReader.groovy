@@ -22,6 +22,8 @@ class ConfigsReader {
     final static String BROWSER_NAME
     final static String BASE_URL
     final static boolean IS_HEADLESS = false
+    final static boolean IS_REMOTE
+    final static String REMOTE_HUB
 
     static {
         BROWSER_NAME = loadProperty('browser')
@@ -29,6 +31,8 @@ class ConfigsReader {
         if (loadProperty('is.headless') == 'true') {
             IS_HEADLESS = true
         }
+        IS_REMOTE = Boolean.parseBoolean(loadProperty('is.remote'))
+        REMOTE_HUB = loadProperty('remote.hub')
 
     }
 

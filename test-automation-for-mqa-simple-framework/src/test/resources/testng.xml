@@ -1,8 +1,43 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="TodoAppTest Tests" verbose="2" parallel="none" thread-count="1">
-    <test name="TodoAppTest">
+<suite name="TodoAppTest Tests" verbose="2" parallel="tests" thread-count="3">
+    <test name="TodoAppTest1">
         <classes>
             <class name="project.tests.TodoAppTest"/>
         </classes>
     </test>
+    <test name="TodoAppTest2">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+    <test name="TodoAppTest3">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+    <test name="TodoAppTest4">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+<!--    <test name="TodoAppTest5">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+    <test name="TodoAppTest6">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+    <test name="TodoAppTest7">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>
+    <test name="TodoAppTest8">
+        <classes>
+            <class name="project.tests.TodoAppTest"/>
+        </classes>
+    </test>-->
 </suite>
